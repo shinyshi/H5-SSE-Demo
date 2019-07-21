@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+
+    <script type="text/javascript">
+        //function initmessage() {
+        //    var source = new EventSource("/home/talk");
+        //    source.onmessage = function (event) {
+
+        //        document.getElementById("result").innerHTML += event.data + "<br />";
+        //    };
+        //    source.onerror = function (event) {
+                
+        //        alert(event);
+        //    };
+        //}
+
+        
+    </script>
+</head>
+<body>
+    <script>
+    if (typeof (EventSource) !== "undefined") {
+        //推送服务接口地址
+        //var eventSource = new EventSource("/Talk/SentNews");
+        var eventSource = new EventSource("/home/talk");
+        //当通往服务器的连接被打开
+        eventSource.onopen = function () {
+            console.log("连接打开...");
+        }
+        //当错误发生
+        eventSource.onerror = function (e) {
+            //console.log(e);
+        };
+        //当接收到消息，此事件为默认事件
+        eventSource.onmessage = function (event) {
+            console.log("onmessage...");
+            document.getElementById("result").innerHTML += event.data + "<br />";
+            //eventSource.close()//关闭SSE链接
+        };
+        //服务器推送sentMessage事件
+        eventSource.addEventListener('sentMessage', function (event) {
+            var data = eval('(' + event.data + ')');//服务器端推送的数据，eval装换Json对象
+            var origin = event.origin;//服务器 URL 的域名部分，即协议、域名和端口，表示消息的来源。
+            var lastEventId = event.lastEventId;////数据的编号，由服务器端发送。如果没有编号，这个属性为空。
+            //此处根据需求编写业务逻辑
+            console.log(data);
+        }, false);
+    } else {
+        //浏览器不支持server-sent events 所有主流浏览器均支持服务器发送事件，除了 Internet Explorer。
+        document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";
+    }
+    </script>
+    <div id="result"></div>
+</body>
+
+</html>
